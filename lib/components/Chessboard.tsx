@@ -1,12 +1,46 @@
 import '../css/index.css';
+import { boardAtom } from '../store';
+import { ChessboardProps } from './Chessboard.types';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
-import { initialBoardSetup } from '../constants';
-import Chesspiece from './Chesspiece';
+import { useHydrateAtoms } from 'jotai/utils';
+import Chesspiece from './chesspiece';
 import React from 'react';
-import Square from './Square';
-export function Chessboard() {
-    const [board, setBoard] = React.useState(initialBoardSetup);
+import Square from './square';
+import type { WritableAtom } from 'jotai'
+interface HydrateAtomsProps {
+    initialValues: Iterable<
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        readonly [WritableAtom<unknown, [any], unknown>, unknown]
+    >
+    children: React.ReactNode;
+}
 
+const HydrateAtoms = ({ initialValues, children }: HydrateAtomsProps) => {
+    useHydrateAtoms(new Map(initialValues));
+    return children;
+}
+
+export function Chessboard({
+    boardPosition,
+    orientation = "white",
+    highlightMoves = false,
+}: ChessboardProps) {
+
+    const initialBoardSetup = boardPosition?.split(" ")[0].split('/').map(row => {
+        const newRow = [];
+        for (let i = 0; i < row.length; i++) {
+            const char = row[i];
+            if (!isNaN(Number(char))) {
+                for (let j = 0; j < Number(char); j++) {
+                    newRow.push("");
+                }
+            } else {
+                newRow.push(char);
+            }
+        }
+        return newRow;
+    });
+    const [board, setBoard] = React.useState(orientation === 'white' ? initialBoardSetup : initialBoardSetup?.slice().reverse());
     const handleDrop = (event: DragEndEvent) => {
         const { over, active } = event;
         if (!over || !active) return;
@@ -15,28 +49,38 @@ export function Chessboard() {
         const [sourceRow, sourceCol] = String(active.id).split('-').map(Number);
         const [targetRow, targetCol] = String(over.id).split('-').map(Number);
         console.log({ active, over, sourceRow, sourceCol, targetRow, targetCol })
-        const newBoard = board.map(row => row.slice());
+        const newBoard = board?.map(row => row.slice());
         newBoard[targetRow][targetCol] = newBoard[sourceRow][sourceCol];
         newBoard[sourceRow][sourceCol] = "";
         setBoard(newBoard);
     }
 
     return (
-        <DndContext onDragEnd={handleDrop}>
-            <div className="board">
-                {
-                    board.map((row, i) => (
-                        row.map((piece, j) => {
-                            const color = (i + j) % 2 === 0 ? 'white' : 'black';
-                            return (
-                                <Square key={`${i}-${j}`} id={`${i}-${j}`} color={color}>
-                                    {piece && <Chesspiece id={`${i}-${j}`} type={piece} />}
-                                </Square>
-                            );
-                        })
-                    ))
-                }
-            </div>
+        <DndContext onDragEnd={handleDrop} >
+            <HydrateAtoms initialValues={[[boardAtom, {
+                selectedPiece: null,
+                turn: "w",
+                highlightMoves
+            }]]}>
+                <div className="board">
+                    {
+                        board?.map((row, i) => (
+                            row.map((piece, j) => {
+                                const color = ((i + j) % 2 === 0 ? 'white' : 'black') === (orientation === 'black' ? 'white' : 'black') ? 'white' : 'black';
+                                const rowNotation = j == 0 ? (orientation === 'black' ? i + 1 : 7 - i + 1) : "";
+                                const colNotation = i == 7 ? String.fromCharCode(97 + (orientation === 'black' ? 7 - j : j)) : "";
+                                return (
+                                    <Square key={`${i}-${j}`} id={`${i}-${j}`} color={color}
+                                        notation={[colNotation, rowNotation.toString()]}
+                                    >
+                                        {piece && <Chesspiece id={`${i}-${j}`} type={piece} />}
+                                    </Square>
+                                );
+                            })
+                        ))
+                    }
+                </div>
+            </HydrateAtoms>
         </DndContext>
     )
 
