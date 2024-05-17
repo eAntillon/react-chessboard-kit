@@ -20,6 +20,11 @@ function Chesspiece({
     return <div className={`chesspiece ${type}`} ref={setNodeRef} style={style}  onMouseDown={
         () => {
             console.log("mousedown", id);
+            // get valid moves
+            // const chess = new Chess();
+            // chess.load(boardPosition);
+            // const moves = chess.moves({ square: id });
+            // console.log(moves);
         }
     } {...listeners} {...attributes}></div>;
 }

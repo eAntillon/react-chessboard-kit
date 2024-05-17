@@ -4,9 +4,9 @@ import { ChessboardProps } from './Chessboard.types';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
 import { useHydrateAtoms } from 'jotai/utils';
 import Chesspiece from './chesspiece';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Square from './square';
-import type { WritableAtom } from 'jotai'
+import { useAtom, type WritableAtom } from 'jotai'
 interface HydrateAtomsProps {
     initialValues: Iterable<
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,21 +26,54 @@ export function Chessboard({
     highlightMoves = false,
 }: ChessboardProps) {
 
-    const initialBoardSetup = boardPosition?.split(" ")[0].split('/').map(row => {
-        const newRow = [];
-        for (let i = 0; i < row.length; i++) {
-            const char = row[i];
-            if (!isNaN(Number(char))) {
-                for (let j = 0; j < Number(char); j++) {
-                    newRow.push("");
+    // const initialBoardSetup = boardPosition?.split(" ")[0].split('/').map(row => {
+    //     const newRow = [];
+    //     for (let i = 0; i < row.length; i++) {
+    //         const char = row[i];
+    //         if (!isNaN(Number(char))) {
+    //             for (let j = 0; j < Number(char); j++) {
+    //                 newRow.push("");
+    //             }
+    //         } else {
+    //             newRow.push(char);
+    //         }
+    //     }
+    //     return newRow;
+    // });
+    // const [board, setBoard] = React.useState(orientation === 'white' ? initialBoardSetup : initialBoardSetup?.slice().reverse());
+
+    const fenToBoard = (fen: string) => {
+        return fen.split(" ")[0].split('/').map(row => {
+            const newRow = [];
+            for (let i = 0; i < row.length; i++) {
+                const char = row[i];
+                if (!isNaN(Number(char))) {
+                    for (let j = 0; j < Number(char); j++) {
+                        newRow.push("");
+                    }
+                } else {
+                    newRow.push(char);
                 }
-            } else {
-                newRow.push(char);
             }
+            return newRow;
+        });
+    }
+
+
+
+    const [boardState, setBoardState] = useAtom(boardAtom);
+
+    useEffect(() => {
+        if (orientation != boardState.orientation) {
+            console.log(`from ${boardState.orientation} to ${orientation}`)
+            setBoardState({
+                ...boardState,
+                board: boardState.board.slice().reverse(),
+            })
         }
-        return newRow;
-    });
-    const [board, setBoard] = React.useState(orientation === 'white' ? initialBoardSetup : initialBoardSetup?.slice().reverse());
+    }, [orientation])
+
+
     const handleDrop = (event: DragEndEvent) => {
         const { over, active } = event;
         if (!over || !active) return;
@@ -49,22 +82,31 @@ export function Chessboard({
         const [sourceRow, sourceCol] = String(active.id).split('-').map(Number);
         const [targetRow, targetCol] = String(over.id).split('-').map(Number);
         console.log({ active, over, sourceRow, sourceCol, targetRow, targetCol })
-        const newBoard = board?.map(row => row.slice());
+        const newBoard = boardState.board?.map(row => row.slice());
         newBoard[targetRow][targetCol] = newBoard[sourceRow][sourceCol];
         newBoard[sourceRow][sourceCol] = "";
-        setBoard(newBoard);
+        setBoardState({
+            ...boardState,
+            board: newBoard,
+            turn: boardState.turn === 'w' ? 'b' : 'w'
+        });
+        console.log({
+            board: newBoard
+        })
     }
 
     return (
         <DndContext onDragEnd={handleDrop} >
             <HydrateAtoms initialValues={[[boardAtom, {
+                board: orientation === 'white' ? fenToBoard(boardPosition) : fenToBoard(boardPosition)?.slice().reverse(),
+                orientation,
                 selectedPiece: null,
-                turn: "w",
+                turn: boardPosition.split(" ")[1],
                 highlightMoves
             }]]}>
                 <div className="board">
                     {
-                        board?.map((row, i) => (
+                        boardState.board?.map((row, i) => (
                             row.map((piece, j) => {
                                 const color = ((i + j) % 2 === 0 ? 'white' : 'black') === (orientation === 'black' ? 'white' : 'black') ? 'white' : 'black';
                                 const rowNotation = j == 0 ? (orientation === 'black' ? i + 1 : 7 - i + 1) : "";
