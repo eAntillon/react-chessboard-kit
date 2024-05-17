@@ -1,4 +1,6 @@
 import { useDraggable } from "@dnd-kit/core";
+import { boardAtom } from "../../store";
+import { useAtom } from "jotai";
 
 interface ChesspieceProps {
     id: string;
@@ -11,20 +13,23 @@ function Chesspiece({
 }: ChesspieceProps) {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
         id,
+        
     });
+
     const style = transform ? {
         transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
         zIndex: 20,
     } : undefined;
 
+    const [boardState, setBoardState] = useAtom(boardAtom)
+
     return <div className={`chesspiece ${type}`} ref={setNodeRef} style={style}  onMouseDown={
         () => {
             console.log("mousedown", id);
-            // get valid moves
-            // const chess = new Chess();
-            // chess.load(boardPosition);
-            // const moves = chess.moves({ square: id });
-            // console.log(moves);
+            setBoardState({
+                ...boardState,
+                selectedSquare: id
+            })
         }
     } {...listeners} {...attributes}></div>;
 }

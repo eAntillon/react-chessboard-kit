@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
+    "@dnd-kit/modifiers": "^7.0.0",
     "chess.js": "^1.0.0-beta.8",
+    "classnames": "^2.5.1",
     "jotai": "^2.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
