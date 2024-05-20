@@ -9,34 +9,24 @@ type Callback<Value> = (
 ) => void
 
 export interface BoardState {
-    board : string[][]
-    selectedSquare: string | null
-    turn: 'w' | 'b'
-    higlihtMoves?: boolean
-    orientation: "white" | "black"
+  board: string[][]
+  selectedSquare: string | null
+  turn: 'w' | 'b'
+  higlihtMoves?: boolean
+  orientation: "white" | "black"
+  validMoves?: { [key: string]: boolean }
 }
 
 export const [boardAtom, useBoardListener] = atomWithListeners<BoardState>(
-    {
-        board: [] as string[][],
-        selectedSquare: null,
-        turn: "w",
-        higlihtMoves: false,
-        orientation: "white"
-    }
+  {
+    board: [] as string[][],
+    selectedSquare: null,
+    turn: "w",
+    higlihtMoves: false,
+    orientation: "white",
+    validMoves: {}
+  }
 );
-
-// export const boardAtom = atom<BoardState>(
-//     {
-//         board: [] as string[][],
-//         selectedSquare: null,
-//         turn: "w",
-//         higlihtMoves: false,
-//         orientation: "white"
-//     }
-// )
-
-
 
 export function atomWithListeners<Value>(initialValue: Value) {
   const baseAtom = atom(initialValue)

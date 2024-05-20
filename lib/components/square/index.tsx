@@ -15,7 +15,7 @@ interface SquareProps {
 
 function Square({ color, children, id, notation }: SquareProps) {
 
-    const [boardState, _] = useAtom(boardAtom)
+    const [boardState] = useAtom(boardAtom)
     const { isOver, setNodeRef } = useDroppable({
         id,
     });
@@ -23,22 +23,22 @@ function Square({ color, children, id, notation }: SquareProps) {
     return (
         <div
             ref={setNodeRef}
-            // className={`square ${color} ${isOver ? "highlight" : ""}`}
             className={
                 classNames({
                     "square": true,
                     [color]: true,
                     "highlight": isOver && boardState.selectedSquare !== id,
-                    "clicked": boardState.selectedSquare === id
+                    "selected": boardState.selectedSquare === id,
+                    "valid-move": boardState.validMoves?.[id] ?? false,
                 })
             }
-            // onClick={() => {
-            //     console.log("clicked: ", id)
-            //     setBoardState({
-            //         ...boardState,
-            //         selectedSquare: id
-            //     })
-            // }}
+        // onClick={() => {
+        //     console.log("clicked: ", id)
+        //     setBoardState({
+        //         ...boardState,
+        //         selectedSquare: id
+        //     })
+        // }}
         >
             {notation && <Notation color={color} notation={notation} />
             }

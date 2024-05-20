@@ -1,16 +1,16 @@
 import '../css/index.css';
-import {  boardAtom, useBoardListener } from '../store';
+import { boardAtom, useBoardListener } from '../store';
+import { Chess } from 'chess.js';
 import { ChessboardProps } from './Chessboard.types';
 import { DndContext, DragEndEvent } from '@dnd-kit/core';
+import { fenToBoard } from '../utils';
+import { getRankName } from '../utils';
+import { snapCenterToCursor } from '@dnd-kit/modifiers';
+import { useAtom, type WritableAtom } from 'jotai'
 import { useHydrateAtoms } from 'jotai/utils';
 import Chesspiece from './chesspiece';
 import React, { useCallback, useEffect } from 'react';
 import Square from './square';
-import {  useAtom, type WritableAtom } from 'jotai'
-import { fenToBoard } from '../utils';
-import { snapCenterToCursor } from '@dnd-kit/modifiers';
-
-
 
 interface HydrateAtomsProps {
     initialValues: Iterable<
@@ -47,17 +47,30 @@ export function Chessboard({
     // });
     // const [board, setBoard] = React.useState(orientation === 'white' ? initialBoardSetup : initialBoardSetup?.slice().reverse());
 
-
     const [boardState, setBoardState] = useAtom(boardAtom)
 
     useBoardListener(useCallback(
-        (get, set, newVal, prevVal) => {
-          // Every time `countAtom`'s value is set, we check if its new value
-          console.log("update selected", newVal.selectedSquare)
+        (_get, _set, newVal, prevVal) => {
+            if (newVal.selectedSquare && newVal.selectedSquare !== prevVal.selectedSquare) {
+                console.log(`selected square: ${newVal.selectedSquare}`)
+                const chess = new Chess();
+                chess.load(boardPosition, {
+                    skipValidation: true
+                });
+                const validMoves = chess.moves({ square: newVal.selectedSquare, verbose: true }).map(move => move.to);
+                const validMovesObj: { [key: string]: boolean } = {};
+                validMoves.forEach(move => {
+                    validMovesObj[move] = true;
+                })
+                setBoardState({
+                    ...boardState,
+                    validMoves: validMovesObj
+                })
+            }
         },
-        [],
-      ),
-  )
+        [boardPosition, boardState, setBoardState],
+    ),
+    )
 
     useEffect(() => {
         if (orientation != boardState.orientation) {
@@ -69,7 +82,7 @@ export function Chessboard({
                 selectedSquare: null
             })
         }
-    }, [orientation])
+    }, [boardState, orientation, setBoardState])
 
 
     const handleDrop = (event: DragEndEvent) => {
@@ -77,16 +90,21 @@ export function Chessboard({
         if (!over || !active) return;
         const isSameCell = over.id === active.id;
         if (isSameCell) return;
-        const [sourceRow, sourceCol] = String(active.id).split('-').map(Number);
-        const [targetRow, targetCol] = String(over.id).split('-').map(Number);
-        console.log({ active, over, sourceRow, sourceCol, targetRow, targetCol })
+        const activeId = active.id as string;
+        const overId = over.id as string;
+        const sourceRow = 8 - Number(activeId[1]);
+        const sourceCol = activeId.charCodeAt(0) - 97;
+        const targetRow = 8 - Number(overId[1]);
+        const targetCol = overId.charCodeAt(0) - 97;
         const newBoard = boardState.board?.map(row => row.slice());
         newBoard[targetRow][targetCol] = newBoard[sourceRow][sourceCol];
         newBoard[sourceRow][sourceCol] = "";
         setBoardState({
             ...boardState,
             board: newBoard,
-            turn: boardState.turn === 'w' ? 'b' : 'w'
+            turn: boardState.turn === 'w' ? 'b' : 'w',
+            selectedSquare: null,
+            validMoves: {}
         });
     }
 
@@ -103,15 +121,15 @@ export function Chessboard({
                     {
                         boardState.board?.map((row, i) => (
                             row.map((piece, j) => {
-                                // const color = ((i + j) % 2 === 0 ? 'white' : 'black') === (orientation === 'black' ? 'white' : 'black') ? 'white' : 'black';
                                 const color = (i + j) % 2 === 0 ? 'white' : 'black';
                                 const rowNotation = j == 0 ? (orientation === 'black' ? i + 1 : 7 - i + 1) : "";
                                 const colNotation = i == 7 ? String.fromCharCode(97 + (orientation === 'black' ? 7 - j : j)) : "";
+                                const id = orientation === 'white' ? `${getRankName(j)}${(8 - i)}` : `${getRankName(7 - j)}${(i + 1)}`;
                                 return (
-                                    <Square key={`${i}-${j}`} id={`${i}-${j}`} color={color}
+                                    <Square key={id} id={id} color={color}
                                         notation={[colNotation, rowNotation.toString()]}
                                     >
-                                        {piece && <Chesspiece id={`${i}-${j}`} type={piece} />}
+                                        {piece && <Chesspiece id={id} type={piece} />}
                                     </Square>
                                 );
                             })
