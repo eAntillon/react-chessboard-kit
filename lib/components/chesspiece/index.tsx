@@ -27,11 +27,12 @@ function Chesspiece({
         [type]: true,
     })} ref={setNodeRef} style={style} onMouseDown={
         () => {
-            console.log("mousedown", id);
+                console.log("clicked: ", id, boardState.selectedSquare)
             setBoardState({
                 ...boardState,
                 selectedSquare: id
             })
+            console.log("boardState: ", boardState)
         }
     } {...listeners} {...attributes}></div>;
 }

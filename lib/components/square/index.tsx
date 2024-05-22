@@ -32,13 +32,7 @@ function Square({ color, children, id, notation }: SquareProps) {
                     "valid-move": boardState.validMoves?.[id] ?? false,
                 })
             }
-        // onClick={() => {
-        //     console.log("clicked: ", id)
-        //     setBoardState({
-        //         ...boardState,
-        //         selectedSquare: id
-        //     })
-        // }}
+        
         >
             {notation && <Notation color={color} notation={notation} />
             }

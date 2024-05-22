@@ -27,8 +27,10 @@ const HydrateAtoms = ({ initialValues, children }: HydrateAtomsProps) => {
 
 export function Chessboard({
     boardPosition,
-    orientation = "white",
     highlightMoves = false,
+    onMove,
+    orientation = "white",
+    showNotation = true
 }: ChessboardProps) {
 
     // const initialBoardSetup = boardPosition?.split(" ")[0].split('/').map(row => {
@@ -52,7 +54,6 @@ export function Chessboard({
     useBoardListener(useCallback(
         (_get, _set, newVal, prevVal) => {
             if (newVal.selectedSquare && newVal.selectedSquare !== prevVal.selectedSquare) {
-                console.log(`selected square: ${newVal.selectedSquare}`)
                 const chess = new Chess();
                 chess.load(boardPosition, {
                     skipValidation: true
@@ -62,9 +63,11 @@ export function Chessboard({
                 validMoves.forEach(move => {
                     validMovesObj[move] = true;
                 })
+                console.log("validMoves: ", validMoves, newVal.selectedSquare)
                 setBoardState({
                     ...boardState,
-                    validMoves: validMovesObj
+                    validMoves: validMovesObj,
+                    selectedSquare: newVal.selectedSquare
                 })
             }
         },
@@ -74,7 +77,7 @@ export function Chessboard({
 
     useEffect(() => {
         if (orientation != boardState.orientation) {
-            console.log(`from ${boardState.orientation} to ${orientation}`)
+            console.log(`changed orientation from ${boardState.orientation} to ${orientation}`)
             setBoardState({
                 ...boardState,
                 board: boardState.board.slice().reverse(),
@@ -96,6 +99,15 @@ export function Chessboard({
         const sourceCol = activeId.charCodeAt(0) - 97;
         const targetRow = 8 - Number(overId[1]);
         const targetCol = overId.charCodeAt(0) - 97;
+
+        const move = {
+            from: `${getRankName(sourceCol)}${8 - sourceRow}`,
+            to: `${getRankName(targetCol)}${8 - targetRow}`
+        }
+        if (onMove) {
+            onMove(move)
+        }
+
         const newBoard = boardState.board?.map(row => row.slice());
         newBoard[targetRow][targetCol] = newBoard[sourceRow][sourceCol];
         newBoard[sourceRow][sourceCol] = "";
@@ -106,6 +118,8 @@ export function Chessboard({
             selectedSquare: null,
             validMoves: {}
         });
+
+
     }
 
     return (
@@ -113,7 +127,7 @@ export function Chessboard({
             <HydrateAtoms initialValues={[[boardAtom, {
                 board: orientation === 'white' ? fenToBoard(boardPosition) : fenToBoard(boardPosition)?.slice().reverse(),
                 orientation,
-                selectedPiece: null,
+                selectedSquare: null,
                 turn: boardPosition.split(" ")[1],
                 highlightMoves
             }]]}>
@@ -127,7 +141,7 @@ export function Chessboard({
                                 const id = orientation === 'white' ? `${getRankName(j)}${(8 - i)}` : `${getRankName(7 - j)}${(i + 1)}`;
                                 return (
                                     <Square key={id} id={id} color={color}
-                                        notation={[colNotation, rowNotation.toString()]}
+                                        notation={showNotation ? [colNotation, rowNotation.toString()] : undefined}
                                     >
                                         {piece && <Chesspiece id={id} type={piece} />}
                                     </Square>

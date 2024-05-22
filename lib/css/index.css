@@ -15,7 +15,7 @@
 
 .square.highlight {
     /* border inner */
-    box-shadow: 0 0 0 3px rgba(216, 216, 216, 0.65) inset;
+    box-shadow: 0 0 0 2px rgba(216, 216, 216, 0.65) inset;
 }
 
 .square.black {

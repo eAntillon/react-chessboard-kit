@@ -1,17 +1,8 @@
 export interface ChessboardProps {
-    boardPosition: string;
-    orientation?: 'white' | 'black';
-    onMove?: (move: string) => void;
-    highlightMoves?: boolean;
+  boardPosition: string;
+  highlightMoves?: boolean;
+  onMove?: (move: { from: string; to: string; promotion?: string }) => void;
+  orientation?: "white" | "black";
+  showNotation?: boolean;
 }
 
-export interface Square {
-    piece: string;
-    color: string;
-    notation?: string[];
-    canBeMove?: boolean;
-    canBeCapture?: boolean;
-}
-export interface Board {
-    [key: string]: Square;
-}

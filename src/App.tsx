@@ -1,18 +1,11 @@
 import { Chess } from "chess.js";
 import { Chessboard } from "../lib/main"
-import { useEffect, useState } from "react";
+import { useState } from "react";
 function App() {
 
-  const [chess] = useState(new Chess("r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3")); // Inicializa chess.js con la posición FEN
-  const [board, setBoard] = useState(chess.board()); // Genera el estado inicial del tablero
+  const [chess] = useState(new Chess()); // Inicializa chess.js con la posición FEN
 
 const [orientation, setOrientation] = useState<"white" | "black">("white")
-
-  useEffect(() => {
-    chess.load("r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3");
-    console.log(chess.board());
-    setBoard(chess.board());
-  }, [chess]);
 
   // const handleMove = (move) => {
   //   const result = chess.move(move);
@@ -34,7 +27,9 @@ const [orientation, setOrientation] = useState<"white" | "black">("white")
       }>
 
         <Chessboard boardPosition={chess.fen()} onMove={(move) => {
-          console.log("Move", move)
+          console.log("Move from app", move)
+          const result = chess.move(move);
+          
         }} orientation={orientation} />
         {/* <Chessboard orientation="black" /> */}
 
