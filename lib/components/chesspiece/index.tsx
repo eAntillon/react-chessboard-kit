@@ -1,6 +1,4 @@
 import { useDraggable } from "@dnd-kit/core";
-import { boardAtom } from "../../store";
-import { useAtom } from "jotai";
 import classNames from "classnames";
 
 interface ChesspieceProps {
@@ -18,7 +16,6 @@ function Chesspiece({
 }: ChesspieceProps) {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
         id,
-
     });
     const style = transform ? {
         transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,

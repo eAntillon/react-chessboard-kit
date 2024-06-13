@@ -1,7 +1,5 @@
 import { useDroppable } from "@dnd-kit/core";
 import Notation from "../notation";
-import { useAtom } from "jotai";
-import { boardAtom } from "../../store";
 import classNames from "classnames";
 
 interface SquareProps {

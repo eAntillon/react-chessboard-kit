@@ -3,17 +3,9 @@ import { Chessboard } from "../lib/main"
 import { useState } from "react";
 function App() {
 
-  const [chess] = useState(new Chess()); // Inicializa chess.js con la posición FEN
+  const [chess, setChess] = useState(new Chess()); // Inicializa chess.js con la posición FEN
 
-const [orientation, setOrientation] = useState<"white" | "black">("white")
-
-  // const handleMove = (move) => {
-  //   const result = chess.move(move);
-  //   if (result !== null) {
-  //     setBoard(chess.board()); // Actualizar el estado del tablero después de un movimiento válido
-  //   }
-  // };
-
+  const [orientation, setOrientation] = useState<"white" | "black">("white")
 
   return (
     <>
@@ -28,14 +20,24 @@ const [orientation, setOrientation] = useState<"white" | "black">("white")
 
         <Chessboard boardPosition={chess.fen()} onMove={(move) => {
           console.log("Move from app", move)
-          const result = chess.move(move);
-          
+          setChess((prev) => {
+            prev.move({ from: move.from, to: move.to, promotion: move.promotion })
+            return new Chess(prev.fen())
+          }
+          )
         }} orientation={orientation} />
         {/* <Chessboard orientation="black" /> */}
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "20px"
+        }}>
 
         <button onClick={() => setOrientation(orientation === "white" ? "black" : "white")}>
           change {orientation}
         </button>
+        <p>{chess.fen()}</p>
+        </div>
       </div>
     </>
   )

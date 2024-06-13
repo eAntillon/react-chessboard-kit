@@ -2,7 +2,7 @@ import "../css/index.css";
 import { ChessboardProps } from "./Chessboard.types";
 import { useLayoutEffect, useState } from "react";
 import { fenToBoard, getRankName } from "../utils";
-import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { DndContext, DragEndEvent, DragOverlay } from "@dnd-kit/core";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import Square from "./square";
 import Chesspiece from "./chesspiece";
@@ -71,13 +71,10 @@ export function Chessboard({
         newBoard[targetRow][targetCol] = newBoard[sourceRow][sourceCol];
         newBoard[sourceRow][sourceCol] = "";
 
-        // set({
-        //     ...boardState,
-        //     board: newBoard,
-        //     turn: turn === "w" ? "b" : "w",
-        //     selectedSquare: null,
-        //     validMoves: {},
-        // });
+        setBoard(newBoard);
+        setSelectedSquare(undefined);
+        setValidMoves({});
+
         onMove?.({
             from: `${getRankName(sourceCol)}${8 - sourceRow}`,
             to: `${getRankName(targetCol)}${8 - targetRow}`,
@@ -86,44 +83,45 @@ export function Chessboard({
 
 
     return (
-        <DndContext onDragEnd={handleDrop} modifiers={[snapCenterToCursor]}>
-            <div className="board">
-                {board?.map((row, i) =>
-                    row.map((piece, j) => {
-                        const color = (i + j) % 2 === 0 ? "white" : "black";
-                        const rowNotation =
-                            j == 0 ? (orientation === "black" ? i + 1 : 7 - i + 1) : "";
-                        const colNotation =
-                            i == 7
-                                ? String.fromCharCode(
-                                    97 + (orientation === "black" ? 7 - j : j)
-                                )
-                                : "";
-                        const id =
-                            orientation === "white"
-                                ? `${getRankName(j)}${8 - i}`
-                                : `${getRankName(7 - j)}${i + 1}`;
-                        return (
-                            <Square
-                                key={id}
-                                id={id}
-                                color={color}
-                                notation={
-                                    showNotation
-                                        ? [colNotation, rowNotation.toString()]
-                                        : undefined
-                                }
-                                dropPiece={dropPiece}
-                                selectedSquare={selectedSquare}
-                                setSelectedSquare={setSelectedSquare}
-                                validMoves={validMoves}
-                            >
-                                {piece && <Chesspiece id={id} type={piece} selectedSquare={selectedSquare} setSelectedSquare={setSelectedSquare} />}
-                            </Square>
-                        );
-                    })
-                )}
-            </div>
+        <DndContext onDragEnd={handleDrop} modifiers={[snapCenterToCursor]} >
+                <div className="board">
+                    {board?.map((row, i) =>
+                        row.map((piece, j) => {
+                            const color = (i + j) % 2 === 0 ? "white" : "black";
+                            const rowNotation =
+                                j == 0 ? (orientation === "black" ? i + 1 : 7 - i + 1) : "";
+                            const colNotation =
+                                i == 7
+                                    ? String.fromCharCode(
+                                        97 + (orientation === "black" ? 7 - j : j)
+                                    )
+                                    : "";
+                            const id =
+                                orientation === "white"
+                                    ? `${getRankName(j)}${8 - i}`
+                                    : `${getRankName(7 - j)}${i + 1}`;
+                            return (
+                                <Square
+                                    key={id}
+                                    id={id}
+                                    color={color}
+                                    notation={
+                                        showNotation
+                                            ? [colNotation, rowNotation.toString()]
+                                            : undefined
+                                    }
+                                    dropPiece={dropPiece}
+                                    selectedSquare={selectedSquare}
+                                    setSelectedSquare={setSelectedSquare}
+                                    validMoves={validMoves}
+                                >
+                                    {piece && <Chesspiece id={id} type={piece} selectedSquare={selectedSquare} setSelectedSquare={setSelectedSquare} />}
+                                </Square>
+                            );
+                        })
+                    )}
+                </div>
+         
         </DndContext>
     );
 }
