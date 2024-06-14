@@ -1,5 +1,5 @@
 import "../css/index.css";
-import { ChessboardProps } from "./Chessboard.types";
+import { ChessboardProps, SelectedSquare } from "./Chessboard.types";
 import { useLayoutEffect, useState } from "react";
 import { fenToBoard, getRankName } from "../utils";
 import { DndContext, DragEndEvent, DragOverlay } from "@dnd-kit/core";
@@ -17,7 +17,9 @@ export function Chessboard({
 
     const [board, setBoard] = useState<string[][]>([]);
     const [validMoves, setValidMoves] = useState<{ [key: string]: boolean }>({})
-    const [selectedSquare, setSelectedSquare] = useState<string>()
+    const [selected, setSelected] = useState<SelectedSquare>()
+
+    
     useLayoutEffect(() => {
         if (orientation === "white") {
             setBoard(fenToBoard(boardPosition))
@@ -29,12 +31,12 @@ export function Chessboard({
 
 
     useLayoutEffect(() => {
-        if (selectedSquare) {
+        if (selected) {
             const chess = new Chess();
             chess.load(boardPosition, {
                 skipValidation: true
             });
-            const validMoves = chess.moves({ square: selectedSquare, verbose: true }).map(move => move.to);
+            const validMoves = chess.moves({ square: selected.square, verbose: true }).map(move => move.to);
             const validMovesObj: { [key: string]: boolean } = {};
             validMoves.forEach(move => {
                 validMovesObj[move] = true;
@@ -44,7 +46,7 @@ export function Chessboard({
         } else {
             setValidMoves({});
         }
-    }, [selectedSquare, board]);
+    }, [selected, board]);
 
     const handleDrop = (event: DragEndEvent) => {
         const { over, active } = event;
@@ -72,7 +74,7 @@ export function Chessboard({
         newBoard[sourceRow][sourceCol] = "";
 
         setBoard(newBoard);
-        setSelectedSquare(undefined);
+        setSelected(undefined);
         setValidMoves({});
 
         onMove?.({
@@ -111,11 +113,11 @@ export function Chessboard({
                                             : undefined
                                     }
                                     dropPiece={dropPiece}
-                                    selectedSquare={selectedSquare}
-                                    setSelectedSquare={setSelectedSquare}
+                                    selected={selected}
+                                    setSelected={setSelected}
                                     validMoves={validMoves}
                                 >
-                                    {piece && <Chesspiece id={id} type={piece} selectedSquare={selectedSquare} setSelectedSquare={setSelectedSquare} />}
+                                    {piece && <Chesspiece id={id} type={piece} selected={selected} setSelected={setSelected} />}
                                 </Square>
                             );
                         })

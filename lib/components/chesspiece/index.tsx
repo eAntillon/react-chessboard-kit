@@ -1,18 +1,19 @@
 import { useDraggable } from "@dnd-kit/core";
 import classNames from "classnames";
+import { SelectedSquare } from "../Chessboard.types";
 
 interface ChesspieceProps {
     id: string;
     type: string;
-    selectedSquare?: string;
-    setSelectedSquare: (square: string) => void;
+    selected?: SelectedSquare;
+    setSelected: (square: SelectedSquare) => void;
 }
 
 function Chesspiece({
     id,
     type,
-    selectedSquare,
-    setSelectedSquare
+    selected,
+    setSelected
 }: ChesspieceProps) {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
         id,
@@ -25,10 +26,14 @@ function Chesspiece({
     return <div className={classNames({
         'chesspiece': true,
         [type]: true,
+        
     })} ref={setNodeRef} style={style} onMouseDown={
         () => {
-                console.log("clicked: ", id, selectedSquare)
-                setSelectedSquare(id)
+                console.log("clicked: ", id, selected)
+                setSelected({
+                    square: id,
+                    piece: type
+                })
         }
     } {...listeners} {...attributes}></div>;
 }

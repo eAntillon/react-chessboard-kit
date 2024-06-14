@@ -1,6 +1,7 @@
 import { useDroppable } from "@dnd-kit/core";
 import Notation from "../notation";
 import classNames from "classnames";
+import { SelectedSquare } from "../Chessboard.types";
 
 interface SquareProps {
     id: string;
@@ -9,13 +10,13 @@ interface SquareProps {
     notation?: string[];
     canBeMove?: boolean;
     canBeCapture?: boolean;
-    selectedSquare?: string;
+    selected?: SelectedSquare;
     validMoves: { [key: string]: boolean };
-    setSelectedSquare: (square: string) => void;
+    setSelected: (square: SelectedSquare) => void;
     dropPiece: (source: string, target: string) => void;
 }
 
-function Square({ color, children, id, notation, dropPiece, selectedSquare, validMoves}: SquareProps) {
+function Square({ color, children, id, notation, dropPiece, selected: selectedSquare, validMoves}: SquareProps) {
     const { isOver, setNodeRef } = useDroppable({
         id,
     });
@@ -26,13 +27,13 @@ function Square({ color, children, id, notation, dropPiece, selectedSquare, vali
             className={classNames({
                 square: true,
                 [color]: true,
-                highlight: isOver && selectedSquare !== id,
-                selected: selectedSquare === id,
+                highlight: isOver && selectedSquare?.square !== id,
+                selected: selectedSquare?.square === id,
                 "valid-move": validMoves?.[id] ?? false,
             })}
             onClick={() => {
                 if (validMoves?.[id]) {
-                    dropPiece(selectedSquare as string, id);
+                    dropPiece(selectedSquare?.square as string, id);
                 }
             }}
         >

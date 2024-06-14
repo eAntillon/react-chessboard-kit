@@ -6,3 +6,8 @@ export interface ChessboardProps {
   showNotation?: boolean;
 }
 
+export interface SelectedSquare {
+  square: string;
+  piece: string;
+}
+
