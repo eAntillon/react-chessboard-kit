@@ -70,7 +70,6 @@ export function Chessboard({
     };
 
     const dropPiece = (source: string, target: string, promotion = "") => {
-
         const isPromotion = selected?.square[1] === "7" && target[1] === "8" && selected?.piece === "P" || selected?.square[1] === "2" && target[1] === "1" && selected?.piece === "p";
         if (isPromotion && !promotion) {
             setPromotionState({ square: target, piece: selected?.piece, nextMove: { source, target }, color: selected?.piece === "P" ? "white" : "black" });
