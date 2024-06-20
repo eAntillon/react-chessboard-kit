@@ -14,18 +14,20 @@ interface SquareProps {
     validMoves: { [key: string]: boolean };
     setSelected: (square: SelectedSquare) => void;
     dropPiece: (source: string, target: string) => void;
+    reset: () => void;
 }
 
-function Square({ color, children, id, notation, dropPiece, selected: selectedSquare, validMoves}: SquareProps) {
+function Square({ color, children, id, notation, dropPiece, selected: selectedSquare, validMoves, reset }: SquareProps) {
     const { isOver, setNodeRef } = useDroppable({
         id,
     });
 
     return (
         <div
+            id={id}
             ref={setNodeRef}
             className={classNames({
-                square: true,
+                "square relative": true,
                 [color]: true,
                 highlight: isOver && selectedSquare?.square !== id,
                 selected: selectedSquare?.square === id,
@@ -34,6 +36,8 @@ function Square({ color, children, id, notation, dropPiece, selected: selectedSq
             onClick={() => {
                 if (validMoves?.[id]) {
                     dropPiece(selectedSquare?.square as string, id);
+                }else if (!children) {
+                    reset();
                 }
             }}
         >

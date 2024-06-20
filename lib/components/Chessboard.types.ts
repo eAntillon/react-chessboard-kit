@@ -11,3 +11,15 @@ export interface SelectedSquare {
   piece: string;
 }
 
+export interface Move {
+  source: string;
+  target: string;
+  promotion?: string;
+}
+
+export interface PromotionState extends SelectedSquare {
+  nextMove: Move;
+  color?: "white" | "black";
+  side?: "top" | "bottom";
+}
+

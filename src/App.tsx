@@ -3,7 +3,8 @@ import { Chessboard } from "../lib/main"
 import { useState } from "react";
 function App() {
 
-  const [chess, setChess] = useState(new Chess()); // Inicializa chess.js con la posición FEN
+  // const [chess, setChess] = useState(new Chess("rnbqkbnr/pP2pppp/8/8/8/8/PPPP1PPP/RNBQKBNR w KQkq - 1 5")); 
+  const [chess, setChess] = useState(new Chess("rnbqkbnr/pP3ppp/8/8/8/8/Pp2BPPP/RNBQK1NR b KQkq - 1 9"));
 
   const [orientation, setOrientation] = useState<"white" | "black">("white")
 
@@ -26,17 +27,17 @@ function App() {
           }
           )
         }} orientation={orientation} />
-        {/* <Chessboard orientation="black" /> */}
+
+
         <div style={{
           display: "flex",
           flexDirection: "column",
           gap: "20px"
         }}>
-
-        <button onClick={() => setOrientation(orientation === "white" ? "black" : "white")}>
-          change {orientation}
-        </button>
-        <p>{chess.fen()}</p>
+          <button onClick={() => setOrientation(orientation === "white" ? "black" : "white")}>
+            change {orientation}
+          </button>
+          <p>{chess.fen()}</p>
         </div>
       </div>
     </>
