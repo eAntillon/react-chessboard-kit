@@ -5,7 +5,7 @@ import { SelectedSquare } from "../Chessboard.types";
 interface ChesspieceProps {
     id: string;
     type: string;
-    selected?: SelectedSquare;
+    selected?: SelectedSquare | null;
     setSelected: (square: SelectedSquare) => void;
 }
 

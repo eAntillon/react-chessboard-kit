@@ -1,13 +1,23 @@
 import "../css/index.css";
-import { ChessboardProps, PromotionState, SelectedSquare } from "./Chessboard.types";
-import { useLayoutEffect, useState } from "react";
-import { fenToBoard, getRankName } from "../utils";
+import {
+    ChessboardProps,
+    PromotionState,
+    SelectedSquare,
+} from "./Chessboard.types";
+import { useLayoutEffect, useMemo, useState } from "react";
+import { fenToBoard, getRankName, getValidMoves } from "../utils";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import Square from "./square";
 import Chesspiece from "./chesspiece";
-import { Chess } from "chess.js";
 import Promotion from "./promotion";
+
+interface boardState {
+    board: string[][];
+    validMoves: { [key: string]: boolean };
+    selected: SelectedSquare | null;
+    promotionState: PromotionState;
+}
 
 export function Chessboard({
     boardPosition,
@@ -15,47 +25,64 @@ export function Chessboard({
     showNotation = true,
     onMove,
 }: ChessboardProps) {
+    const [boardState, setBoardState] = useState<boardState>({
+        board: fenToBoard(boardPosition),
+        validMoves: {},
+        selected: null,
+        promotionState: {
+            square: "",
+            piece: "",
+            nextMove: { source: "", target: "" },
+        },
+    });
 
-    const [board, setBoard] = useState<string[][]>([]);
-    const [validMoves, setValidMoves] = useState<{ [key: string]: boolean }>({})
-    const [selected, setSelected] = useState<SelectedSquare>()
-    const [promotionState, setPromotionState] = useState<PromotionState>(
-        {
-            square: "", piece: "", nextMove: {
-                source: "",
-                target: "",
-            },
-        }
-    )
+    // const [board, setBoard] = useState<string[][]>([]);
+    // const [validMoves, setValidMoves] = useState<{ [key: string]: boolean }>({})
+    // const [selected, setSelected] = useState<SelectedSquare>()
+    // const [promotionState, setPromotionState] = useState<PromotionState>(
+    //     {
+    //         square: "",
+    //         piece: "",
+    //         nextMove: { source: "", target: "" },
+    //     }
+    // )
 
+    const reversedBoard = useMemo(() => {
+        return fenToBoard(boardPosition)
+            ?.slice()
+            .reverse()
+            .map((row) => row.slice().reverse());
+    }, [boardPosition]);
 
     useLayoutEffect(() => {
         if (orientation === "white") {
-            setBoard(fenToBoard(boardPosition))
+            // setBoard(fenToBoard(boardPosition))
+            setBoardState({ ...boardState, board: fenToBoard(boardPosition) });
         } else {
-            const reverseBoard = fenToBoard(boardPosition)?.slice().reverse().map((row) => row.slice().reverse())
-            setBoard(reverseBoard)
+            // setBoard(reversedBoard)
+            setBoardState({ ...boardState, board: reversedBoard });
         }
     }, [boardPosition, orientation]);
 
-
     useLayoutEffect(() => {
-        setPromotionState({ square: "", piece: "", nextMove: { source: "", target: "" } })
-        if (selected) {
-            const chess = new Chess();
-            chess.load(boardPosition, {
-                skipValidation: true
+        setBoardState({
+            ...boardState,
+            promotionState: {
+                square: "",
+                piece: "",
+                nextMove: { source: "", target: "" },
+            },
+        });
+
+        if (boardState.selected) {
+            setBoardState({
+                ...boardState,
+                validMoves: getValidMoves(boardPosition, boardState.selected.square),
             });
-            const validMoves = chess.moves({ square: selected.square, verbose: true }).map(move => move.to);
-            const validMovesObj: { [key: string]: boolean } = {};
-            validMoves.forEach(move => {
-                validMovesObj[move] = true;
-            })
-            setValidMoves(validMovesObj);
         } else {
-            setValidMoves({});
+            setBoardState({ ...boardState, validMoves: {} });
         }
-    }, [selected, board]);
+    }, [boardState.selected, boardState.board]);
 
     const handleDrop = (event: DragEndEvent) => {
         const { over, active } = event;
@@ -64,15 +91,26 @@ export function Chessboard({
         if (isSameCell) return;
         const activeId = active.id as string;
         const overId = over.id as string;
-
-
         dropPiece(activeId, overId);
     };
 
     const dropPiece = (source: string, target: string, promotion = "") => {
-        const isPromotion = selected?.square[1] === "7" && target[1] === "8" && selected?.piece === "P" || selected?.square[1] === "2" && target[1] === "1" && selected?.piece === "p";
-        if (isPromotion && !promotion) {
-            setPromotionState({ square: target, piece: selected?.piece, nextMove: { source, target }, color: selected?.piece === "P" ? "white" : "black" });
+        const isPromotion =
+            (boardState.selected?.square[1] === "7" &&
+                target[1] === "8" &&
+                boardState.selected?.piece === "P") ||
+            (boardState.selected?.square[1] === "2" &&
+                target[1] === "1" &&
+                boardState.selected?.piece === "p");
+        if (isPromotion && !promotion && boardState.validMoves[target]) {
+            setBoardState({
+                ...boardState,
+                promotionState: {
+                    square: target,
+                    piece: boardState.selected?.piece as string,
+                    nextMove: { source, target },
+                },
+            });
             return;
         }
 
@@ -81,35 +119,38 @@ export function Chessboard({
         const targetRow = 8 - Number(target[1]);
         const targetCol = target.charCodeAt(0) - 97;
 
-        if (validMoves && !validMoves[target]) {
+        if (boardState.validMoves && !boardState.validMoves[target]) {
             return;
         }
 
-        const newBoard = board?.map((row) => row.slice());
+        const newBoard = boardState.board?.map((row) => row.slice());
         newBoard[targetRow][targetCol] = newBoard[sourceRow][sourceCol];
         newBoard[sourceRow][sourceCol] = "";
 
-        setBoard(newBoard);
-        setSelected(undefined);
-        setValidMoves({});
+        setBoardState({
+            ...boardState,
+            board: newBoard,
+            selected: null,
+            validMoves: {},
+        });
 
         onMove?.({
             from: `${getRankName(sourceCol)}${8 - sourceRow}`,
             to: `${getRankName(targetCol)}${8 - targetRow}`,
-            promotion
+            promotion,
         });
     };
 
-
     const reset = () => {
-        setSelected(undefined);
-        setValidMoves({});
-    }
+        // setSelected(undefined);
+        // setValidMoves({});
+        setBoardState({ ...boardState, selected: null, validMoves: {} });
+    };
 
     return (
-        <DndContext onDragEnd={handleDrop} modifiers={[snapCenterToCursor]} >
+        <DndContext onDragEnd={handleDrop} modifiers={[snapCenterToCursor]}>
             <div className="board">
-                {board?.map((row, i) =>
+                {boardState.board?.map((row, i) =>
                     row.map((piece, j) => {
                         const color = (i + j) % 2 === 0 ? "white" : "black";
                         const rowNotation =
@@ -135,18 +176,29 @@ export function Chessboard({
                                         : undefined
                                 }
                                 dropPiece={dropPiece}
-                                selected={selected}
-                                setSelected={setSelected}
-                                validMoves={validMoves}
+                                selected={boardState.selected}
+                                validMoves={boardState.validMoves}
                                 reset={reset}
                             >
-                                {piece && <Chesspiece id={id} type={piece} selected={selected} setSelected={setSelected} />}
+                                {piece && (
+                                    <Chesspiece
+                                        id={id}
+                                        type={piece}
+                                        selected={boardState.selected}
+                                        setSelected={(square: SelectedSquare) =>
+                                            setBoardState({ ...boardState, selected: square })
+                                        }
+                                    />
+                                )}
                             </Square>
                         );
                     })
                 )}
             </div>
-            <Promotion promotionState={promotionState} dropPiece={dropPiece} />
+            <Promotion
+                promotionState={boardState.promotionState}
+                dropPiece={dropPiece}
+            />
         </DndContext>
     );
 }

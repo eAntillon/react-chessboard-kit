@@ -1,3 +1,4 @@
+import { Chess, Square } from "chess.js";
 
 
 export const getRankName = (rank: number) => {
@@ -21,7 +22,6 @@ export const fenToBoard = (fen: string) => {
     });
 }
 
-
 export const boardToFen = (board: string[][]) => {
     return board.map(row => {
         let newRow = "";
@@ -43,4 +43,17 @@ export const boardToFen = (board: string[][]) => {
         }
         return newRow;
     }).join("/");
+}
+
+export const getValidMoves = (board: string, square: string) => {
+    const chess = new Chess();
+    chess.load(board, {
+        skipValidation: true
+    });
+    const validMoves = chess.moves({ square: square as Square, verbose: true }).map(move => move.to);
+    const validMovesObj: { [key: string]: boolean } = {};
+    validMoves.forEach(move => {
+        validMovesObj[move] = true;
+    })
+    return validMovesObj;
 }

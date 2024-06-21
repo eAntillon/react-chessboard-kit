@@ -10,9 +10,8 @@ interface SquareProps {
     notation?: string[];
     canBeMove?: boolean;
     canBeCapture?: boolean;
-    selected?: SelectedSquare;
+    selected?: SelectedSquare | null;
     validMoves: { [key: string]: boolean };
-    setSelected: (square: SelectedSquare) => void;
     dropPiece: (source: string, target: string) => void;
     reset: () => void;
 }
@@ -24,7 +23,7 @@ const addAnimation = async ({ source, target }: { source: string, target: string
     if (sourceSquare && targetSquare) {
         console.log(sourceSquare.offsetLeft, sourceSquare.offsetHeight);
         console.log(targetSquare.offsetLeft, targetSquare.offsetHeight)
-        const piece = sourceSquare.querySelector(".chesspiece");
+        const piece = sourceSquare.querySelector(".chesspiece") as HTMLElement;
         if (piece) {
             const keyframes = `
                 0% {

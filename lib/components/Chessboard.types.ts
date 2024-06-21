@@ -20,6 +20,5 @@ export interface Move {
 export interface PromotionState extends SelectedSquare {
   nextMove: Move;
   color?: "white" | "black";
-  side?: "top" | "bottom";
 }
 

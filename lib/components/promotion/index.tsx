@@ -11,16 +11,15 @@ function Promotion({
   promotionState: {
     square,
     nextMove,
-    side,
     color
   }, dropPiece
 }: PromotionProps) {
 
   const pieces = square[1] === "1" ? ["q", "r", "b", "n"] : ["Q", "R", "B", "N"];
+  const side = color === "white" ? "top" : "bottom";
+
+
   return <>
-    {
-      JSON.stringify(square)
-    }
     {square && createPortal(
       <div className={
         classNames({
