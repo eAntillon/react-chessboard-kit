@@ -6,8 +6,6 @@ interface NotationProps {
 function Notation(
     { notation, color }: NotationProps
 ) {
-
-
     return (
         <>
             {

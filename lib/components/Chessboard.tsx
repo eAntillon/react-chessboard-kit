@@ -1,7 +1,7 @@
 import "../css/index.css";
 import {
+    BoardState,
     ChessboardProps,
-    PromotionState,
     SelectedSquare,
 } from "./Chessboard.types";
 import { useLayoutEffect, useMemo, useState } from "react";
@@ -12,20 +12,13 @@ import Square from "./square";
 import Chesspiece from "./chesspiece";
 import Promotion from "./promotion";
 
-interface boardState {
-    board: string[][];
-    validMoves: { [key: string]: boolean };
-    selected: SelectedSquare | null;
-    promotionState: PromotionState;
-}
-
 export function Chessboard({
     boardPosition,
     orientation,
     showNotation = true,
     onMove,
 }: ChessboardProps) {
-    const [boardState, setBoardState] = useState<boardState>({
+    const [boardState, setBoardState] = useState<BoardState>({
         board: fenToBoard(boardPosition),
         validMoves: {},
         selected: null,
@@ -36,17 +29,6 @@ export function Chessboard({
         },
     });
 
-    // const [board, setBoard] = useState<string[][]>([]);
-    // const [validMoves, setValidMoves] = useState<{ [key: string]: boolean }>({})
-    // const [selected, setSelected] = useState<SelectedSquare>()
-    // const [promotionState, setPromotionState] = useState<PromotionState>(
-    //     {
-    //         square: "",
-    //         piece: "",
-    //         nextMove: { source: "", target: "" },
-    //     }
-    // )
-
     const reversedBoard = useMemo(() => {
         return fenToBoard(boardPosition)
             ?.slice()
@@ -56,10 +38,8 @@ export function Chessboard({
 
     useLayoutEffect(() => {
         if (orientation === "white") {
-            // setBoard(fenToBoard(boardPosition))
             setBoardState({ ...boardState, board: fenToBoard(boardPosition) });
         } else {
-            // setBoard(reversedBoard)
             setBoardState({ ...boardState, board: reversedBoard });
         }
     }, [boardPosition, orientation]);
@@ -142,8 +122,6 @@ export function Chessboard({
     };
 
     const reset = () => {
-        // setSelected(undefined);
-        // setValidMoves({});
         setBoardState({ ...boardState, selected: null, validMoves: {} });
     };
 
@@ -197,6 +175,7 @@ export function Chessboard({
             </div>
             <Promotion
                 promotionState={boardState.promotionState}
+                setPromotionState={(promotionState) => setBoardState({ ...boardState, promotionState })}
                 dropPiece={dropPiece}
             />
         </DndContext>

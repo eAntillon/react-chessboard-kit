@@ -5,6 +5,7 @@ import { PromotionState } from "../Chessboard.types";
 interface PromotionProps {
   promotionState: PromotionState
   dropPiece: (source: string, target: string, promotion: string) => void
+  setPromotionState: (promotionState: PromotionState) => void
 }
 
 function Promotion({
@@ -12,13 +13,16 @@ function Promotion({
     square,
     nextMove,
     color
-  }, dropPiece
+  }, dropPiece,
+  
 }: PromotionProps) {
 
   const pieces = square[1] === "1" ? ["q", "r", "b", "n"] : ["Q", "R", "B", "N"];
   const side = color === "white" ? "top" : "bottom";
 
-
+  const handleCancel = () => {
+    dropPiece(nextMove.source, nextMove.target, "")
+  }
   return <>
     {square && createPortal(
       <div className={

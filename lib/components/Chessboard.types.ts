@@ -22,3 +22,9 @@ export interface PromotionState extends SelectedSquare {
   color?: "white" | "black";
 }
 
+export interface BoardState {
+  board: string[][];
+  validMoves: { [key: string]: boolean };
+  selected: SelectedSquare | null;
+  promotionState: PromotionState;
+}
