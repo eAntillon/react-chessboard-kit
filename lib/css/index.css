@@ -114,9 +114,8 @@
     background-repeat: no-repeat;
 }
 
-.chesspiece .moving {
-    cursor: grabbing;
-    
+.chesspiece.checked {
+    border: 2px solid red;
 }
 
 .promotion {

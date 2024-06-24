@@ -1,6 +1,7 @@
-- Fix promotion selection component, with correct position per side
-- Check visual signal 
-- Fix checkmate error
-- Incorrect position boundary
-- Add themes
+- [x] Fix promotion selection component, 
+- [x] Correct promotion square position per side
+- [] Check visual signal 
+- [] Fix checkmate error
+- [] Incorrect position boundary
+- [] Add themes
 - 

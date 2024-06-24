@@ -5,7 +5,7 @@ import {
     SelectedSquare,
 } from "./Chessboard.types";
 import { useLayoutEffect, useMemo, useState } from "react";
-import { fenToBoard, getRankName, getValidMoves, reverseBoard } from "../utils";
+import { fenToBoard, getRankName, getValidMoves, inCheck, reverseBoard } from "../utils";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import Square from "./square";
@@ -28,7 +28,7 @@ export function Chessboard({
             nextMove: { source: "", target: "" },
         },
         validMoves: {},
-        isCheck: null,
+        inCheck: inCheck(boardPosition),
     });
 
     const resetBoardState = () => {
@@ -39,7 +39,7 @@ export function Chessboard({
                 square: "",
                 nextMove: { source: "", target: "" },
             },
-            isCheck: null,
+            inCheck: inCheck(boardPosition),
         });
     }
 
@@ -162,6 +162,7 @@ export function Chessboard({
                                         setSelected={(square: SelectedSquare) =>
                                             setBoardState({ ...boardState, selected: square })
                                         }
+                                        inCheck={piece === boardState.inCheck}
                                     />
                                 )}
                             </Square>

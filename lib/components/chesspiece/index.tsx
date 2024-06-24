@@ -8,13 +8,15 @@ interface ChesspieceProps {
     type: string;
     selected?: SelectedSquare | null;
     setSelected: (square: SelectedSquare) => void;
+    inCheck: boolean | null;
 }
 
 function Chesspiece({
     id,
     type,
     selected,
-    setSelected
+    setSelected,
+    inCheck,
 }: ChesspieceProps) {
     
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
@@ -28,6 +30,7 @@ function Chesspiece({
     return <div className={classNames({
         'chesspiece': true,
         [type]: true,
+        "checked": inCheck,
 
     })} ref={setNodeRef} style={style} onMouseDown={
         () => {

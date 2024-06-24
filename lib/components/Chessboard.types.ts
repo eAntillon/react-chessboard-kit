@@ -27,5 +27,5 @@ export interface BoardState {
   validMoves: { [key: string]: boolean };
   selected: SelectedSquare | null;
   promotionState: PromotionState;
-  isCheck: "white" | "black" | null;
+  inCheck: "k" | "K" | null;
 }

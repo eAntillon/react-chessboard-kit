@@ -110,3 +110,14 @@ export const resetAnimation = ({ source, target }: { source: string, target: str
         }
     }
 }
+
+export const inCheck = (board: string) => {
+    const chess = new Chess();
+    chess.load(board, {
+        skipValidation: true
+    });
+    if (chess.inCheck()) {
+        return chess.turn() === "w" ? "K" : "k";
+    }
+    return null;
+}
