@@ -35,7 +35,7 @@ function App() {
           gap: "20px"
         }}>
           <button onClick={() => setOrientation(orientation === "white" ? "black" : "white")}>
-            change {orientation}
+            current: {orientation}
           </button>
           <p>{chess.fen()}</p>
         </div>

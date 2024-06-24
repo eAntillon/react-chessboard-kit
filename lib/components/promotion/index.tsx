@@ -5,7 +5,8 @@ import { PromotionState } from "../Chessboard.types";
 interface PromotionProps {
   promotionState: PromotionState
   dropPiece: (source: string, target: string, promotion: string) => void
-  setPromotionState: (promotionState: PromotionState) => void
+  resetPromotion?: () => void
+  orientation: "white" | "black"
 }
 
 function Promotion({
@@ -14,25 +15,30 @@ function Promotion({
     nextMove,
     color
   }, dropPiece,
-  
+  orientation
 }: PromotionProps) {
 
-  const pieces = square[1] === "1" ? ["q", "r", "b", "n"] : ["Q", "R", "B", "N"];
-  const side = color === "white" ? "top" : "bottom";
-
-  const handleCancel = () => {
-    dropPiece(nextMove.source, nextMove.target, "")
+  const pieces = color == "black" ? ["q", "r", "b", "n"] : ["Q", "R", "B", "N"];
+  
+  let side = "bottom";
+  if (orientation === "white") {
+    side = color === "white" ? "top" : "bottom";
   }
+  if (orientation === "black") {
+    side = color === "white" ? "bottom" : "top";
+  }
+
+
   return <>
     {square && createPortal(
-      <div className={
+      <div id="promotion" className={
         classNames({
           "promotion": true,
           [color!]: true,
           [side!]: true
         })
-
-      }>
+      }
+      >
         {
           pieces.map((p, i) => (
             <div key={i} className={
@@ -46,8 +52,9 @@ function Promotion({
             </div>
           ))
         }
-      </div>, document.querySelector(`#${square}`) as Element
-    )}
+      </div >, document.querySelector(`#${square}`) as Element
+    )
+    }
   </>
 }
 

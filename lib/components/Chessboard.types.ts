@@ -17,14 +17,15 @@ export interface Move {
   promotion?: string;
 }
 
-export interface PromotionState extends SelectedSquare {
+export interface PromotionState {
+  square: string;
   nextMove: Move;
   color?: "white" | "black";
 }
 
 export interface BoardState {
-  board: string[][];
   validMoves: { [key: string]: boolean };
   selected: SelectedSquare | null;
   promotionState: PromotionState;
+  isCheck: "white" | "black" | null;
 }

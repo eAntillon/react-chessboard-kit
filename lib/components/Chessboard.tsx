@@ -5,7 +5,7 @@ import {
     SelectedSquare,
 } from "./Chessboard.types";
 import { useLayoutEffect, useMemo, useState } from "react";
-import { fenToBoard, getRankName, getValidMoves } from "../utils";
+import { fenToBoard, getRankName, getValidMoves, reverseBoard } from "../utils";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { snapCenterToCursor } from "@dnd-kit/modifiers";
 import Square from "./square";
@@ -14,55 +14,60 @@ import Promotion from "./promotion";
 
 export function Chessboard({
     boardPosition,
-    orientation,
+    orientation = "white",
     showNotation = true,
     onMove,
 }: ChessboardProps) {
+
+    const DEFAULT_BOARD = useMemo(() => (orientation == "white" ? fenToBoard(boardPosition) : reverseBoard(fenToBoard(boardPosition))), [boardPosition, orientation])
+
     const [boardState, setBoardState] = useState<BoardState>({
-        board: fenToBoard(boardPosition),
-        validMoves: {},
         selected: null,
         promotionState: {
             square: "",
-            piece: "",
             nextMove: { source: "", target: "" },
         },
+        validMoves: {},
+        isCheck: null,
     });
 
-    const reversedBoard = useMemo(() => {
-        return fenToBoard(boardPosition)
-            ?.slice()
-            .reverse()
-            .map((row) => row.slice().reverse());
-    }, [boardPosition]);
-
-    useLayoutEffect(() => {
-        if (orientation === "white") {
-            setBoardState({ ...boardState, board: fenToBoard(boardPosition) });
-        } else {
-            setBoardState({ ...boardState, board: reversedBoard });
-        }
-    }, [boardPosition, orientation]);
-
-    useLayoutEffect(() => {
+    const resetBoardState = () => {
         setBoardState({
-            ...boardState,
+            selected: null,
+            validMoves: {},
             promotionState: {
                 square: "",
-                piece: "",
                 nextMove: { source: "", target: "" },
             },
+            isCheck: null,
         });
+    }
 
+    useLayoutEffect(() => {
         if (boardState.selected) {
-            setBoardState({
-                ...boardState,
-                validMoves: getValidMoves(boardPosition, boardState.selected.square),
-            });
+            setBoardState((prevState) => {
+                return {
+                    ...prevState,
+                    validMoves: getValidMoves(boardPosition, prevState.selected!.square),
+                    promotionState: {
+                        square: "",
+                        nextMove: { source: "", target: "" },
+                    },
+                }
+            })
         } else {
-            setBoardState({ ...boardState, validMoves: {} });
+            setBoardState((prevState) => {
+                return {
+                    ...prevState,
+                    validMoves: {},
+                    promotionState: {
+                        square: "",
+                        nextMove: { source: "", target: "" },
+                    },
+                }
+            })
         }
-    }, [boardState.selected, boardState.board]);
+    }, [boardState.selected]);
 
     const handleDrop = (event: DragEndEvent) => {
         const { over, active } = event;
@@ -87,8 +92,8 @@ export function Chessboard({
                 ...boardState,
                 promotionState: {
                     square: target,
-                    piece: boardState.selected?.piece as string,
                     nextMove: { source, target },
+                    color: boardState.selected?.piece === "P" ? "white" : "black",
                 },
             });
             return;
@@ -103,13 +108,8 @@ export function Chessboard({
             return;
         }
 
-        const newBoard = boardState.board?.map((row) => row.slice());
-        newBoard[targetRow][targetCol] = newBoard[sourceRow][sourceCol];
-        newBoard[sourceRow][sourceCol] = "";
-
         setBoardState({
             ...boardState,
-            board: newBoard,
             selected: null,
             validMoves: {},
         });
@@ -121,14 +121,10 @@ export function Chessboard({
         });
     };
 
-    const reset = () => {
-        setBoardState({ ...boardState, selected: null, validMoves: {} });
-    };
-
     return (
         <DndContext onDragEnd={handleDrop} modifiers={[snapCenterToCursor]}>
             <div className="board">
-                {boardState.board?.map((row, i) =>
+                {DEFAULT_BOARD.map((row, i) =>
                     row.map((piece, j) => {
                         const color = (i + j) % 2 === 0 ? "white" : "black";
                         const rowNotation =
@@ -156,7 +152,7 @@ export function Chessboard({
                                 dropPiece={dropPiece}
                                 selected={boardState.selected}
                                 validMoves={boardState.validMoves}
-                                reset={reset}
+                                reset={resetBoardState}
                             >
                                 {piece && (
                                     <Chesspiece
@@ -174,8 +170,9 @@ export function Chessboard({
                 )}
             </div>
             <Promotion
+                orientation={orientation}
                 promotionState={boardState.promotionState}
-                setPromotionState={(promotionState) => setBoardState({ ...boardState, promotionState })}
+                resetPromotion={resetBoardState}
                 dropPiece={dropPiece}
             />
         </DndContext>

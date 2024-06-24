@@ -1,3 +1,10 @@
+:root {
+    --white: #eeeed2;
+    --black: #769656;
+    --highlight: rgba(216, 216, 216, 0.65);
+    --selected: #baca44;
+}
+
 .board {
     display: grid;
     grid-template-columns: repeat(8, 50px);
@@ -14,23 +21,20 @@
 }
 
 .square.highlight {
-    /* border inner */
-    box-shadow: 0 0 0 2px rgba(216, 216, 216, 0.65) inset;
+    box-shadow: 0 0 0 2px var(--highlight) inset;
 }
 
 .square.black {
-    background-color: #769656;
+    background-color: var(--black);
 }
 
 .square.white {
-    background-color: #eeeed2;
+    background-color: var(--white);
 }
 
 .square.selected {
-    background-color: #baca44;
+    background-color: var(--selected);
 }
-
-/* square valid-move and not .chesspiece inside selectos */
 
 .square.valid-move:not(:has(.chesspiece)):after {
     position: absolute;
@@ -38,6 +42,7 @@
     height: 18px;
     width: 18px;
     background-color: rgba(51, 51, 51, 0.24);
+    /* background-color: var(--highlight); */
     border-radius: 50%;
     display: inline-block;
 }
@@ -60,12 +65,11 @@
 }
 
 .white-notation {
-    color: #769656;
-
+    color: var(--black);
 }
 
 .black-notation {
-    color: #eeeed2;
+    color: var(--white);
 }
 
 .notation {
@@ -140,11 +144,11 @@
 }
 
 /* add side promotion  */
-.promotion .top {
+.promotion.top {
     top: 0;
 }
-.promotion .bottom {
-    bottom: 0;
+.promotion.bottom {
+    bottom: 0rem;
 }
 .p {
     background-image: url('data:image/svg+xml,<%3Fxml version="1.0" encoding="UTF-8" standalone="no"%3F><!--Gyalog (fekete)Eredeti: http://en.wikipedia.org/wiki/File:Chess_pdt45.svgFelhasználási feltételek: Nevezd meg! - Így add tovább! (Creative Commons)Uray M. János2013-2018--><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 45 45"><g fill="%23000" stroke="%23000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="miter"><path d="M 22.5,9C 20.29,9 18.5,10.79 18.5,13 C 18.5,13.89 18.79,14.71 19.28,15.38C 17.33,16.5 16,18.59 16,21 C 16,23.03 16.94,24.84 18.41,26.03C 15.41,27.09 11,31.58 11,39.5L 34,39.5C 34,31.58 29.59,27.09 26.59,26.03C 28.06,24.84 29,23.03 29,21 C 29,18.59 27.67,16.5 25.72,15.38C 26.21,14.71 26.5,13.89 26.5,13 C 26.5,10.79 24.71,9 22.5,9Z"/></g></svg>')

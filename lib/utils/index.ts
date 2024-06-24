@@ -57,3 +57,56 @@ export const getValidMoves = (board: string, square: string) => {
     })
     return validMovesObj;
 }
+
+
+export const reverseBoard = (board: string[][]) => {
+    return board?.slice()
+        .reverse()
+        .map((row) => row.slice().reverse());
+}
+
+export const addAnimation = async ({ source, target }: { source: string, target: string }) => {
+    const sourceSquare = document.getElementById(source);
+    const targetSquare = document.getElementById(target);
+
+    if (sourceSquare && targetSquare) {
+        console.log(sourceSquare.offsetLeft, sourceSquare.offsetHeight);
+        console.log(targetSquare.offsetLeft, targetSquare.offsetHeight)
+        const piece = sourceSquare.querySelector(".chesspiece") as HTMLElement;
+        if (piece) {
+            const keyframes = `
+                0% {
+                    transform: translate(0, 0);
+                }
+                100% {
+                    transform: translate(${targetSquare.offsetLeft - sourceSquare.offsetLeft}px, ${targetSquare.offsetTop - sourceSquare.offsetTop}px);
+                }
+            `
+            const animation = document.createElement("style");
+            animation.type = "text/css";
+            animation.innerHTML = `@keyframes move {${keyframes}}`;
+            document.head.appendChild(animation);
+            piece.classList.add("moving");
+            piece.style.animation = "move 0.2s forwards";
+          
+            return new Promise<void>((resolve) => {
+                setTimeout(() => {
+                    resolve();
+                }, 200);
+            })
+
+        }
+    }
+}
+
+export const resetAnimation = ({ source, target }: { source: string, target: string }) => {
+    const sourceSquare = document.getElementById(source);
+    const targetSquare = document.getElementById(target);
+    if (sourceSquare && targetSquare) {
+        const piece = sourceSquare.querySelector(".chesspiece") as HTMLElement;
+        if (piece) {
+            piece.classList.remove("moving");
+            piece.style.animation = "";
+        }
+    }
+}
