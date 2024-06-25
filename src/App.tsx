@@ -5,6 +5,17 @@ function App() {
 
   // const [chess, setChess] = useState(new Chess("rnbqkbnr/pP2pppp/8/8/8/8/PPPP1PPP/RNBQKBNR w KQkq - 1 5")); 
   const [chess, setChess] = useState(new Chess("rnbqkbnr/pP3ppp/8/8/8/8/Pp2BPPP/RNBQK1NR b KQkq - 1 9"));
+  const [theme, setTheme] = useState("default")
+
+  const themeNames = [
+    "default",
+    "coral",
+    "dusk",
+    "marine",
+    "wheat",
+    "emerald",
+    "sandcastle"
+  ];
 
   const [orientation, setOrientation] = useState<"white" | "black">("white")
 
@@ -25,7 +36,7 @@ function App() {
             return new Chess(prev.fen())
           }
           )
-        }} orientation={orientation} />
+        }} orientation={orientation} theme={theme} />
 
 
         <div style={{
@@ -37,6 +48,17 @@ function App() {
             current: {orientation}
           </button>
           <p>{chess.fen()}</p>
+
+          <div>
+            <p>Change theme:</p>
+            <select value={theme} onChange={(e) => setTheme(e.target.value)}>
+              {themeNames.map((themeName) => (
+                <option key={themeName} value={themeName}>
+                  {themeName}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
     </>

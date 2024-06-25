@@ -1,9 +1,87 @@
-:root {
+.theme-default {
     --white: #eeeed2;
     --black: #769656;
     --highlight: rgba(216, 216, 216, 0.65);
     --selected: #baca44;
-    --danger: rgba(255, 0, 0, 0.5);
+    --danger: rgba(252, 7, 7, 0.867);
+    --circle: rgba(51, 51, 51, 0.24);
+    --promote-bg: rgba(222, 222, 222, 0.913);
+    --promotion-hover: rgba(162, 162, 162, 0.958);
+}
+
+.theme-coral {
+    --white: #b1e4b9;
+    --black: #70a2a3;
+    --highlight: rgba(177, 228, 185, 0.65);
+    --selected: #c2d0cd;
+    --danger: #ff7f50;
+    --circle: rgba(114, 134, 134, 0.4);
+    --promote-bg: rgba(112, 162, 163, 0.8);
+    --promotion-hover: rgba(177, 228, 185, 0.1);
+}
+
+.theme-dusk {
+    --white: #ccb7ae;
+    --black: #70667b;
+    --highlight: rgba(204, 183, 174, 0.65);
+    --selected: #a89694;
+    --danger: #8b0000;
+    --circle: rgba(90, 80, 93, 0.4);
+    --promote-bg: rgba(112, 102, 119, 0.8);
+    --promotion-hover: rgba(204, 183, 174, 0.1);
+}
+
+.theme-marine {
+    --white: #9dacff;
+    --black: #6f73d2;
+    --highlight: rgba(157, 172, 255, 0.65);
+    --selected: #b4c0f8;
+    --danger: #00008b;
+    --circle: rgba(62, 63, 112, 0.24);
+    --promote-bg: rgba(111, 115, 210, 0.8);
+    --promotion-hover: rgba(157, 172, 255, 0.1);
+}
+
+.theme-wheat {
+    --white: #eaf0ce;
+    /* Light 234,240,206 */
+    --black: #bbbe64;
+    /* Dark 187,190,100 */
+    --highlight: rgba(234, 240, 206, 0.65);
+    --selected: #cfdaa7;
+    --danger: #b8860b;
+    /* Golden rod for danger */
+    --circle: rgba(103, 105, 53, 0.24);
+    --promote-bg: rgba(187, 190, 100, 0.8);
+    --promotion-hover: rgba(234, 240, 206, 0.1);
+}
+
+.theme-emerald {
+    --white: #adb78f;
+    /* Light 173,189,143 */
+    --black: #6f8f72;
+    /* Dark 111,143,114 */
+    --highlight: rgba(173, 189, 143, 0.65);
+    --selected: #95a67e;
+    --danger: #228b22;
+    /* Forest green for danger */
+    --circle: rgba(59, 74, 60, 0.24);
+    --promote-bg: rgba(111, 143, 114, 0.8);
+    --promotion-hover: rgba(173, 189, 143, 0.1);
+}
+
+.theme-sandcastle {
+    --white: #e3c16f;
+    /* Light 227,193,111 */
+    --black: #b88b4a;
+    /* Dark 184,139,74 */
+    --highlight: rgba(227, 193, 111, 0.65);
+    --selected: #d2aa67;
+    --danger: #d2691e;
+    /* Chocolate for danger */
+    --circle: rgba(96, 72, 38, 0.24);
+    --promote-bg: rgba(184, 139, 74, 0.8);
+    --promotion-hover: rgba(227, 193, 111, 0.1);
 }
 
 .board {
@@ -42,8 +120,7 @@
     content: '';
     height: 18px;
     width: 18px;
-    background-color: rgba(51, 51, 51, 0.24);
-    /* background-color: var(--highlight); */
+    background-color: var(--circle);
     border-radius: 50%;
     display: inline-block;
 }
@@ -116,7 +193,7 @@
 }
 
 .in-check {
-    background-color: red !important;
+    background-color: var(--danger) !important;
 }
 
 .promotion {
@@ -127,7 +204,7 @@
     position: absolute;
     width: 100%;
     height: 11rem;
-    background-color: rgba(28, 28, 28, 0.877);
+    background-color: var(--promote-bg);
     z-index: 100;
     /* top: 0; */
     border-radius: 3px;
@@ -135,12 +212,12 @@
 
 .promotion>.chesspiece {
     cursor: pointer;
-    width: 3rem;
+    width: 100%;
     height: 3rem;
 }
 
 .promotion>.chesspiece:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--promotion-hover);
 }
 
 /* add side promotion  */
@@ -155,6 +232,7 @@
 .moving::after {
     background-color: transparent;
 }
+
 .p {
     background-image: url('data:image/svg+xml,<%3Fxml version="1.0" encoding="UTF-8" standalone="no"%3F><!--Gyalog (fekete)Eredeti: http://en.wikipedia.org/wiki/File:Chess_pdt45.svgFelhasználási feltételek: Nevezd meg! - Így add tovább! (Creative Commons)Uray M. János2013-2018--><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 45 45"><g fill="%23000" stroke="%23000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="miter"><path d="M 22.5,9C 20.29,9 18.5,10.79 18.5,13 C 18.5,13.89 18.79,14.71 19.28,15.38C 17.33,16.5 16,18.59 16,21 C 16,23.03 16.94,24.84 18.41,26.03C 15.41,27.09 11,31.58 11,39.5L 34,39.5C 34,31.58 29.59,27.09 26.59,26.03C 28.06,24.84 29,23.03 29,21 C 29,18.59 27.67,16.5 25.72,15.38C 26.21,14.71 26.5,13.89 26.5,13 C 26.5,10.79 24.71,9 22.5,9Z"/></g></svg>')
 }

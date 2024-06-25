@@ -17,8 +17,9 @@ export function Chessboard({
     orientation = "white",
     showNotation = true,
     onMove,
+    theme = "default",
 }: ChessboardProps) {
-
+    const themeClass = `theme-${theme}`;
     const DEFAULT_BOARD = useMemo(() => (orientation == "white" ? fenToBoard(boardPosition) : reverseBoard(fenToBoard(boardPosition))), [boardPosition, orientation])
 
     const [boardState, setBoardState] = useState<BoardState>({
@@ -122,7 +123,7 @@ export function Chessboard({
 
     return (
         <DndContext onDragEnd={handleDrop} modifiers={[snapCenterToCursor]}>
-            <div className="board">
+            <div className={`board ${themeClass}`}>
                 {DEFAULT_BOARD.map((row, i) =>
                     row.map((piece, j) => {
                         const color = (i + j) % 2 === 0 ? "white" : "black";

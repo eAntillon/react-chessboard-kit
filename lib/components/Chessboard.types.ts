@@ -4,6 +4,7 @@ export interface ChessboardProps {
   onMove?: (move: { from: string; to: string; promotion?: string }) => void;
   orientation?: "white" | "black";
   showNotation?: boolean;
+  theme?: string;
 }
 
 export interface SelectedSquare {
