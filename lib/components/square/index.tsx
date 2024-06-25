@@ -15,8 +15,9 @@ interface SquareProps {
     validMoves: { [key: string]: boolean };
     dropPiece: (source: string, target: string) => void;
     reset?: () => void;
+    inCheck?: boolean;
 }
-function Square({ color, children, id, notation, dropPiece, selected: selectedSquare, validMoves, reset }: SquareProps) {
+function Square({ color, children, id, notation, dropPiece, selected: selectedSquare, validMoves, reset, inCheck}: SquareProps) {
     const { isOver, setNodeRef } = useDroppable({
         id,
     });
@@ -31,6 +32,7 @@ function Square({ color, children, id, notation, dropPiece, selected: selectedSq
                 highlight: isOver && selectedSquare?.square !== id,
                 selected: selectedSquare?.square === id,
                 "valid-move": validMoves?.[id] ?? false,
+                "in-check": inCheck,
             })}
             onClick={async () => {
                 if (validMoves?.[id]) {
@@ -39,7 +41,7 @@ function Square({ color, children, id, notation, dropPiece, selected: selectedSq
                         target: id,
                     });
                     dropPiece(selectedSquare?.square as string, id);
-                } else if (!children) {
+                } else if (!children && selectedSquare?.square) {
                     if (reset)
                     reset();
                     resetAnimation({

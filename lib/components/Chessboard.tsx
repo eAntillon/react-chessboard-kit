@@ -28,7 +28,6 @@ export function Chessboard({
             nextMove: { source: "", target: "" },
         },
         validMoves: {},
-        inCheck: inCheck(boardPosition),
     });
 
     const resetBoardState = () => {
@@ -39,10 +38,10 @@ export function Chessboard({
                 square: "",
                 nextMove: { source: "", target: "" },
             },
-            inCheck: inCheck(boardPosition),
         });
     }
 
+    const isInCheck = inCheck(boardPosition);
     useLayoutEffect(() => {
         if (boardState.selected) {
             setBoardState((prevState) => {
@@ -153,6 +152,7 @@ export function Chessboard({
                                 selected={boardState.selected}
                                 validMoves={boardState.validMoves}
                                 reset={resetBoardState}
+                                inCheck={piece == isInCheck}
                             >
                                 {piece && (
                                     <Chesspiece
@@ -162,7 +162,6 @@ export function Chessboard({
                                         setSelected={(square: SelectedSquare) =>
                                             setBoardState({ ...boardState, selected: square })
                                         }
-                                        inCheck={piece === boardState.inCheck}
                                     />
                                 )}
                             </Square>

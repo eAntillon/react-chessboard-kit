@@ -70,8 +70,6 @@ export const addAnimation = async ({ source, target }: { source: string, target:
     const targetSquare = document.getElementById(target);
 
     if (sourceSquare && targetSquare) {
-        console.log(sourceSquare.offsetLeft, sourceSquare.offsetHeight);
-        console.log(targetSquare.offsetLeft, targetSquare.offsetHeight)
         const piece = sourceSquare.querySelector(".chesspiece") as HTMLElement;
         if (piece) {
             const keyframes = `
@@ -119,5 +117,7 @@ export const inCheck = (board: string) => {
     if (chess.inCheck()) {
         return chess.turn() === "w" ? "K" : "k";
     }
+    console.log(`inCheck: ${chess.inCheck()} ${chess.turn()}`);
+
     return null;
 }
