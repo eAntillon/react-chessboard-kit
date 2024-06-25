@@ -117,7 +117,5 @@ export const inCheck = (board: string) => {
     if (chess.inCheck()) {
         return chess.turn() === "w" ? "K" : "k";
     }
-    console.log(`inCheck: ${chess.inCheck()} ${chess.turn()}`);
-
     return null;
 }

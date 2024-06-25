@@ -31,7 +31,6 @@ function Chesspiece({
         [type]: true,
     })} ref={setNodeRef} style={style} onMouseDown={
         () => {
-            console.log("clicked: ", id, selected)
             if (selected?.square != id) {
                 setSelected({
                     square: id,

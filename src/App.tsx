@@ -20,7 +20,6 @@ function App() {
       }>
 
         <Chessboard boardPosition={chess.fen()} onMove={(move) => {
-          console.log("Move from app", move)
           setChess((prev) => {
             prev.move({ from: move.from, to: move.to, promotion: move.promotion })
             return new Chess(prev.fen())
