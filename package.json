@@ -1,7 +1,13 @@
 {
   "name": "react-chessboard-kit",
-  "private": true,
-  "version": "1.0.0",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eAntillon/react-chessboard-kit"
+  },
+  "homepage": "https://react-chessboard-kit.netlify.app/",
+  "description": "A chessboard component for React",
+  "version": "1.0.3",
   "type": "module",
   "main": "./dist/index.umd.js",
   "module": "./dist/index.es.js",
@@ -45,5 +51,17 @@
     "vite": "^5.2.0",
     "vite-plugin-dts": "^3.9.1"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "keywords": [
+    "chess",
+    "chessboard",
+    "react",
+    "react-component",
+    "react-chessboard",
+    "react-chessboard-kit"
+  ]
 }
