@@ -41,6 +41,7 @@ export function Chessboard({
             },
         });
     }
+    
 
     const isInCheck = inCheck(boardPosition);
     useLayoutEffect(() => {

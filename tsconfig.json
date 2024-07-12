@@ -12,7 +12,9 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "declaration": true,
     "jsx": "react-jsx",
+    "typeRoots": ["./dist/index.d.ts"],
 
     /* Linting */
     "strict": true,
