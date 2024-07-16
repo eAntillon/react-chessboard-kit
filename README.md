@@ -45,25 +45,17 @@ import { useState } from 'react';
 
 function App() {
     const [chess, setChess] = useState(new Chess());
-    const [theme, setTheme] = useState("default");
-    const [orientation, setOrientation] = useState("white");
-
     return (
-        <Chessboard
-            boardPosition={chess.fen()}
-            onMove={handleMove}
-            orientation={orientation}
-            theme={theme}
-            />
-        );
-
-    function handleMove(move) {
-            setChess(prev => {
-            const newGame = { ...prev };
-            newGame.move({ from: move.from, to: move.to, promotion: move.promotion });
-            return new Chess(newGame.fen());
-        });
-    }
+        <Chessboard boardPosition={chess.fen()}
+          onMove={(move) => {
+            setChess((prev) => {
+              prev.move({ from: move.from, to: move.to, promotion: move.promotion })
+              return new Chess(prev.fen())
+            }
+            )
+          }}
+        />
+    )
 }
 
 export default App;
